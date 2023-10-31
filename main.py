@@ -1,5 +1,4 @@
 import ttg
-import re
 
 # Variavel de keywords / comandos safe-to-use para o ttg
 safeCommands: [str] = ["not", "-", "~", "or", "||", "nor",
@@ -56,16 +55,30 @@ class Interpreter:
                 active = False
                 return
 
-    def countVars(self, var: str):
-        # TODO Regex ou loop para achar quantas vezes a mesma variavel aparece em todas as operações
-        #retornar qual variavel é e quantas vezes aparece
-        return
     
-    def countOps(self, op: str):
-        # TODO Regex ou loop para achar quantas vezes a mesma operação aparece 
-        #retornar qual operação é e quantas vezes aparece
-        #talvez retornar as operações com seus nomes, não sei sei la
-        return
+    def countVars(self, ops:[str], varsList: [str]) -> [str, int]:
+        # Retorna apenas uma lista com o elemento mais comum e quantas vezes ele aparece
+        hashmap = {}
+        for j in range(len(ops)):
+            for i in ops[j].split():
+                if(i in hashmap and i in varsList):
+                    hashmap[i] += 1
+                if(i in varsList and i not in hashmap):
+                    hashmap[i] = 1
+        return [max(hashmap, key=hashmap.get), max(hashmap.values())]
+
+    
+    def getOpCount(self) -> dict:
+        # Retorna o hashmap completo com a contagem das operações
+        hashmap = {}
+        ops = self.operations
+        for j in range(len(ops)):
+            for i in ops[j].split():
+                if(i in hashmap and i in safeCommands):
+                    hashmap[i] += 1
+                if(i not in hashmap and i in safeCommands):
+                    hashmap[i] = 1
+        return hashmap
 
     def createTable(self):
         table = ttg.Truths(self.variables, self.operations)
@@ -76,14 +89,19 @@ class Interpreter:
         # Show n of variables and number of results
         print(f"[👾] Você inseriu {len(self.variables)} variavéis!")
         # TODO add counter de variaveis
-        print(f"[👀] Sua variavél favorita foi: self.countVars() ! Ela apareceu self.countVars() vezes em todas as operações!")
+        print(f"[👀] Sua variavél favorita foi: {self.countVars(self.operations, self.variables)[0]}! Ela apareceu {self.countVars(self.operations, self.variables)[1]} vezes em todas as operações!")
 
         # TODO Inserir identificador de fórmulas da lista 'operations'
         print(
             f"[🐱‍💻] Você realizou {len(self.operations)} operações! Elas foram: ")
-
         for i in self.operations:
-            print(f"🎉 {i}")
+            print(f"\t🎉 {i}")
+        
+        
+        print("[😎] Em todas as operações, você realizou:\n")
+        opList = self.getOpCount()
+        for i in opList:
+            print(f"\t[🏃‍♀️] '{i}' apareceu {opList[i]} vezes!")
 
         cont = input(
             "[🍙] Deseja continuar o programa? Pressione Enter para reiniciar e 'Q' para fechar o programa\n")
@@ -91,7 +109,11 @@ class Interpreter:
             return
         else:
             Interpreter.processRunner(self)
-
+        
 
 if __name__ == "__main__":
     Interpreter()
+    # print(countVars(['a and a', 'a or b', 'a => a'], ['a', 'b']))
+
+
+
