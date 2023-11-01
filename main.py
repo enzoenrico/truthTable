@@ -98,7 +98,7 @@ class Interpreter:
             print(f"\t🎉 {i}")
         
         
-        print("[😎] Em todas as operações, você realizou:\n")
+        print("[😎] Em todas as operações, você realizou:")
         opList = self.getOpCount()
         for i in opList:
             print(f"\t[🏃‍♀️] '{i}' apareceu {opList[i]} vezes!")
